@@ -1,35 +1,52 @@
 class Account {
 
   constructor(username) {
-    // Have the account balance start at $0 since that makes more sense
     this.username = username;
-    this.balance = 0;
+    this.transactions = [];
+
   }
+
+  get balance() {
+    let balance = 0;
+    for (const t of this.transactions) {
+      balance += t.value;
+    }
+    return balance;
+  }
+
+  addTransatcion(transaction) {
+    this.transactions.push(transaction);
+  }
+
 }
 
-
-class Withdrawal {
+class Transaction {
 
   constructor(amount, account) {
-    this.account = account;
     this.amount = amount;
+    this.account = account;
   }
 
   commit() {
-    this.account.balance -= this.amount
+    this.time = new Date();
+    this.account.addTransatcion(this);
+
   }
 
 }
 
-class Deposit {
 
-  constructor(amount, account) {
-    this.account = account;
-    this.amount = amount;
+class Withdrawal extends Transaction {
+
+  get value() {
+    return -this.amount;
   }
+}
 
-  commit() {
-    this.account.balance += this.amount;
+class Deposit extends Transaction {
+
+  get value() {
+    return this.amount;
   }
 
 }
@@ -41,10 +58,16 @@ class Deposit {
 
 const myAccount = new Account('snow-patrol');
 
-t1 = new Deposit(100.00, myAccount);
+const t1 = new Deposit(100.00, myAccount);
 t1.commit();
 
-t2 = new Withdrawal(50.25, myAccount);
+
+const t2 = new Withdrawal(76.25, myAccount);
 t2.commit();
+
+
+const t3 = new Deposit(500.00, myAccount);
+t3.commit();
+
 
 console.log(myAccount.balance);
